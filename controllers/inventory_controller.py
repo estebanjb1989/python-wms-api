@@ -5,11 +5,11 @@ from decorators.token_required import token_required
 from services import container
 
 inventory_bp = Blueprint('inventory_bp', __name__)
-auth_service = container.auth_service
+inventory_service = container.inventory_service
 
 @inventory_bp.route('/inventory', methods=['GET'])
 @token_required
-def get_inventory():
+def get_inventory(current_user):
     warehouse_id = request.args.get('warehouse_id')
 
     if warehouse_id:
@@ -20,13 +20,13 @@ def get_inventory():
     else:
         warehouse_id = None
 
-    inventory = auth_service.get_inventory_items(warehouse_id)
+    inventory = inventory_service.get_inventory_items(warehouse_id)
     return jsonify(inventory)
 
 @inventory_bp.route('/inventory/<int:item_id>', methods=['GET'])
 @token_required
 def get_inventory_item(current_user, item_id):
-    rows = auth_service.get_inventory_item_by_id(item_id)
+    rows = inventory_service.get_inventory_item_by_id(item_id)
 
     if not rows:
         return jsonify({"error": "Inventory item not found"}), 404

@@ -17,7 +17,7 @@ def login():
 
     user = auth_service.find_user_by_username(username)
 
-    if user and user["password"] == password:
+    if user and user.password == password:
         access_token = auth_service.create_access_token(user)
         refresh_token = auth_service.create_refresh_token(user)
         return jsonify({

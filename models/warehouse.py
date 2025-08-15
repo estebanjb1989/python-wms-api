@@ -1,6 +1,7 @@
 from modules.db import db
+from models.mixins import ToDictMixin
 
-class Warehouse(db.Model):
+class Warehouse(db.Model, ToDictMixin):
     __tablename__ = 'warehouses'
 
     id = db.Column(db.Integer, primary_key=True)

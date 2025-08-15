@@ -8,7 +8,7 @@ warehouse_service = container.warehouse_service
 
 @warehouse_bp.route('/warehouses', methods=['GET'])
 @token_required
-@role_required('super admin')
+@role_required('superadmin')
 def get_warehouses(current_user):
     warehouses = warehouse_service.get_all()
-    return jsonify(warehouses)
+    return jsonify([w.to_dict() for w in warehouses]) 

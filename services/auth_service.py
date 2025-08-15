@@ -16,8 +16,8 @@ class AuthService:
 
     def create_access_token(self, user):
         payload = {
-            "user": user["username"],
-            "role": user.get("role", "user"),
+            "user": user.username,
+            "role": user.role or "user",
             "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
         }
         token = jwt.encode(payload, current_app.config["SECRET_KEY"], algorithm="HS256")
@@ -25,12 +25,12 @@ class AuthService:
 
     def create_refresh_token(self, user):
         payload = {
-            "user": user["username"],
+            "user": user.username,
             "exp": datetime.datetime.utcnow() + datetime.timedelta(days=7)
         }
         token = jwt.encode(payload, current_app.config["SECRET_KEY"], algorithm="HS256")
         token_str = token if isinstance(token, str) else token.decode('utf-8')
-        add_token(token_str, user["username"])
+        add_token(token_str, user.username)
         return token_str
 
     def validate_refresh_token(self, token):
