@@ -1,16 +1,14 @@
-# controllers/warehouse_controller.py
-
 from flask import Blueprint, jsonify
 from decorators.token_required import token_required
-from services.warehouses_service import get_all_warehouses
+from decorators.role_required import role_required
+from services import container
 
 warehouse_bp = Blueprint('warehouse_bp', __name__)
+warehouse_service = container.warehouse_service
 
 @warehouse_bp.route('/warehouses', methods=['GET'])
 @token_required
+@role_required('super admin')
 def get_warehouses(current_user):
-    if current_user['role'] != 'super admin':
-        return jsonify({"error": "Access denied: super admin only"}), 403
-
-    warehouses = get_all_warehouses()
+    warehouses = warehouse_service.get_all()
     return jsonify(warehouses)

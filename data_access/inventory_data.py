@@ -1,34 +1,61 @@
 # data_access/inventory_data.py
 
-from data_connection import get_db_connection
+from models.inventory import Inventory
+from models.stock import Stock
+from app import db
 
 def fetch_inventory(warehouse_id=None):
-    query = """
-        SELECT p.id, p.name, p.packaging, p.gtin, s.warehouse_id, s.quantity
-        FROM products p
-        JOIN stock s ON p.id = s.product_id
-    """
-    params = ()
+    query = db.session.query(
+        Inventory.id,
+        Inventory.name,
+        Inventory.packaging,
+        Inventory.gtin,
+        Stock.warehouse_id,
+        Stock.quantity
+    ).join(Stock, Inventory.id == Stock.inventory_id)
 
     if warehouse_id is not None:
-        query += " WHERE s.warehouse_id = ?"
-        params = (warehouse_id,)
+        query = query.filter(Stock.warehouse_id == warehouse_id)
 
-    conn = get_db_connection()
-    rows = conn.execute(query, params).fetchall()
-    conn.close()
+    results = query.all()
 
-    return [dict(row) for row in rows]
+    # Convert to list of dicts
+    return [
+        {
+            "id": r.id,
+            "name": r.name,
+            "packaging": r.packaging,
+            "gtin": r.gtin,
+            "warehouse_id": r.warehouse_id,
+            "quantity": r.quantity,
+        }
+        for r in results
+    ]
+
 
 def fetch_inventory_item_by_id(item_id):
-    query = """
-        SELECT p.id, p.name, p.packaging, p.gtin, s.warehouse_id, s.quantity
-        FROM products p
-        JOIN stock s ON p.id = s.product_id
-        WHERE p.id = ?
-    """
-    conn = get_db_connection()
-    rows = conn.execute(query, (item_id,)).fetchall()
-    conn.close()
+    query = db.session.query(
+        Inventory.id,
+        Inventory.name,
+        Inventory.packaging,
+        Inventory.gtin,
+        Stock.warehouse_id,
+        Stock.quantity
+    ).join(Stock, Inventory.id == Stock.inventory_id).filter(Inventory.id == item_id)
 
-    return [dict(row) for row in rows]
+    results = query.all()
+
+    if not results:
+        return None
+
+    return [
+        {
+            "id": r.id,
+            "name": r.name,
+            "packaging": r.packaging,
+            "gtin": r.gtin,
+            "warehouse_id": r.warehouse_id,
+            "quantity": r.quantity,
+        }
+        for r in results
+    ]

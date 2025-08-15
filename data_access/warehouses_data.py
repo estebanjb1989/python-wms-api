@@ -1,9 +1,8 @@
 # data_access/warehouse_data.py
+import jsonify
 
-from data_connection import get_db_connection
+from models.warehouse import Warehouse
 
 def fetch_all_warehouses():
-    conn = get_db_connection()
-    rows = conn.execute("SELECT * FROM warehouses").fetchall()
-    conn.close()
-    return [dict(row) for row in rows]
+    warehouses = Warehouse.query.all()
+    return jsonify([w.to_dict() for w in warehouses])

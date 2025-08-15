@@ -1,28 +1,18 @@
-from data_connection import get_db_connection
+# data_access/token_data.py
+
+from app import db
+from models.refresh_token import RefreshToken
 
 def add_token(token, username):
-    conn = get_db_connection()
-    conn.execute(
-        "INSERT INTO refresh_tokens (token, username) VALUES (?, ?)",
-        (token, username)
-    )
-    conn.commit()
-    conn.close()
+    rt = RefreshToken(token=token, username=username)
+    db.session.add(rt)
+    db.session.commit()
 
 def remove_token(token):
-    conn = get_db_connection()
-    conn.execute(
-        "DELETE FROM refresh_tokens WHERE token = ?",
-        (token,)
-    )
-    conn.commit()
-    conn.close()
+    rt = RefreshToken.query.filter_by(token=token).first()
+    if rt:
+        db.session.delete(rt)
+        db.session.commit()
 
 def is_token_valid(token):
-    conn = get_db_connection()
-    row = conn.execute(
-        "SELECT token FROM refresh_tokens WHERE token = ?",
-        (token,)
-    ).fetchone()
-    conn.close()
-    return row is not None
+    return RefreshToken.query.filter_by(token=token).first() is not None

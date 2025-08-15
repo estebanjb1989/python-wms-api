@@ -1,0 +1,4 @@
+[
+  {"name": "Bottle of Wine", "packaging": "unit", "gtin": "1234567890123"},
+  {"name": "Six Pack Wine", "packaging": "pack*6", "gtin": "1234567890124"}
+]
