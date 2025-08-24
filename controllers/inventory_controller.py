@@ -9,7 +9,7 @@ inventory_service = container.inventory_service
 
 @inventory_bp.route('/inventory', methods=['GET'])
 @token_required
-def get_inventory(current_user):
+def get_inventory():
     warehouse_id = request.args.get('warehouse_id')
 
     if warehouse_id:

@@ -2,6 +2,7 @@
 
 from flask import Blueprint, request, jsonify
 from services import container
+from decorators.token_required import token_required 
 
 auth_bp = Blueprint('auth_bp', __name__)
 auth_service = container.auth_service
@@ -18,6 +19,7 @@ def login():
     user = auth_service.find_user_by_username(username)
 
     if user and user.password == password:
+        # return jsonify({"message": "ok"}), 200
         access_token = auth_service.create_access_token(user)
         refresh_token = auth_service.create_refresh_token(user)
         return jsonify({
@@ -49,3 +51,19 @@ def logout():
 
     auth_service.invalidate_refresh_token(token)
     return jsonify({"message": "Logged out successfully"})
+
+@auth_bp.route('/me', methods=['GET'])
+@token_required
+def get_current_user(current_user):
+    username = current_user.get("username")
+    user = auth_service.find_user_by_username(username)
+
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    # Return user info (exclude sensitive data like password)
+    return jsonify({
+        "id": user.id,
+        "username": user.username,
+        "role": user.role
+    })

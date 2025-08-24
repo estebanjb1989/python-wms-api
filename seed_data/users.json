@@ -1,4 +1,4 @@
 [
-  {"username": "esteban", "password": "123", "role": "superadmin"},
+  {"username": "sofia@devias.io", "password": "Secret1", "role": "superadmin"},
   {"username": "warehouse_admin", "password": "123", "role": "warehouse_admin"}
 ]

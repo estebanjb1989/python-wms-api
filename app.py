@@ -1,19 +1,30 @@
-# app.py
 from flask import Flask
-from modules.db import db
 from flask_migrate import Migrate
+import os
+from modules.db import db
+from flask_cors import CORS
+
+import config
+
+migrate = Migrate()
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object('config.Config')
+
+    # Enable CORS
+    CORS(app, origins=["http://localhost:3000"])
+
+    # Choose config based on env variable
+    env = os.environ.get('FLASK_ENV', 'development').lower()
+    if env == 'production':
+        app.config.from_object(config.ProductionConfig)
+    elif env == 'staging':
+        app.config.from_object(config.StagingConfig)
+    else:
+        app.config.from_object(config.DevelopmentConfig)
 
     db.init_app(app)
-    migrate = Migrate(app, db)
-
-    print(migrate)
-
-    with app.app_context():
-        db.create_all()
+    migrate.init_app(app, db)
 
     from controllers.auth_controller import auth_bp
     from controllers.inventory_controller import inventory_bp

@@ -2,3 +2,6 @@ __pycache__
 env
 instance
 migrations
+erd.dot
+frontend/node_modules/
+frontend/.next

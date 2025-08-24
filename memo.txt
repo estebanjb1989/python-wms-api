@@ -1,0 +1,18 @@
+pip install Flask-Migrate
+
+flask db init
+flask db migrate -m "Initial migration"
+flask db upgrade
+
+https://specially-true-ocelot.ngrok-free.app/
+
+sudo apt install graphviz graphviz-dev
+pip install pygraphviz
+
+eralchemy -i sqlite:///instance/data.db -o erd.dot
+dot -Tpng erd.dot -o erd.png
+
+export FLASK_ENV=development
+python app.py
+
+ngrok http --domain=specially-true-ocelot.ngrok-free.app 127.0.0.1:5000
